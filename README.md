@@ -28,7 +28,8 @@
       pin_memory=True
   )
   
-  test_loader = torch.utils.data.DataLoader(						           				torchvision.datasets.ImageFolder(testdir, torchvision.transforms.Compose([
+  test_loader = torch.utils.data.DataLoader(
+      torchvision.datasets.ImageFolder(testdir, torchvision.transforms.Compose([
       torchvision.transforms.Resize(re_size),
       torchvision.transforms.CenterCrop(input_size),
       torchvision.transforms.ToTensor(),
