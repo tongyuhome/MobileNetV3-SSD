@@ -48,7 +48,7 @@
 
 ### 第二部分
 
-- SSD的部分大致思路：将MobileNetV3作为backbone放入到SSD中，因为MobileNetV3刚出来不久，这部分的内容需要自己编写，但是SSD和MobileNetV3的工作已经完成度很好了，所以也没有太大难度，参考[SSD](<https://github.com/qfgaohao/pytorch-ssd>)完成，非常感谢。需要注意的一点是在backbone中选取的第一层特征图位置在我的MobileNetV3中第9个MobileBlock中第一个conv中的经过h-swish激活之后的位置即可，这个的选择依据是每层的特征图大小，当然论文中也有提及，特征图大小变化规则是19-10-5-3-2-1。
+- SSD的部分大致思路：将MobileNetV3作为backbone放入到SSD中，因为MobileNetV3刚出来不久，这部分的内容需要自己编写，但是SSD和MobileNetV3的工作已经完成度很好了，所以也没有太大难度，参考[SSD](<https://github.com/qfgaohao/pytorch-ssd>)完成，非常感谢。需要注意的一点是在backbone中选取的第一层特征图位置在我的MobileNetV3中第9个MobileBlock中第一个conv中的经过h-swish激活之后的位置即可，这个的选择依据是每层的特征图大小，特征图大小变化规则是19-10-5-3-2-1，当然论文中也有提及。
 
   > “For MobileNetV3-Small, C4 is the expansion layer of the 9-th bottleneck block.”
 
