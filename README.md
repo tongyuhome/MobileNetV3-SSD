@@ -7,7 +7,7 @@
 
 第一部分MobileNetV3的内容非常简单，大致思路：创建网络，载入预训练模型，fine-tune网络，数据预处理，训练。
 
-- 参考[MobileNetV3](https://github.com/leaderj1001/MobileNetV3-Pytorch)完成网络创建，非常感谢。MobileNetV3有两种网络结构LARGE和SMALL，我选择了SMALL来进行实验，载入预训练的模型之后只需要更具自己数据的类别数量fine-tune最后一层网络即可。
+- 参考[MobileNetV3](https://github.com/leaderj1001/MobileNetV3-Pytorch)完成网络创建，非常感谢。MobileNetV3有两种网络结构LARGE和SMALL，我选择了SMALL来进行实验，载入预训练的模型之后只需要更具自己数据的类别数量修改最后一层网络即可。
 
 - 数据预处理也是常规的简单处理：
 
@@ -42,13 +42,11 @@
   )
   ```
 
-30类的数据大概95k的数据，每类取出300张图像用作测试，每个EPOCH的训练时间在10min左右(GTX1070)，设置了20EPOCH之内没有收敛则停止训练，所以大概在140个EPOCH之后停止。训练之后在测试中达到99.60的准确率。
-
 
 
 ### 第二部分
 
-- SSD的部分大致思路：将MobileNetV3作为backbone放入到SSD中，因为MobileNetV3刚出来不久，这部分的内容需要自己编写，但是SSD和MobileNetV3的工作已经完成度很好了，所以也没有太大难度，参考[SSD](<https://github.com/qfgaohao/pytorch-ssd>)完成，非常感谢。需要注意的一点是在backbone中选取的第一层特征图位置在我的MobileNetV3中第9个MobileBlock中第一个conv中的经过h-swish激活之后的位置即可，这个的选择依据是每层的特征图大小，特征图大小变化规则是19-10-5-3-2-1，当然论文中也有提及。
+- SSD的部分大致思路：将MobileNetV3作为backbone放入到SSD中，因为MobileNetV3刚出来不久，这部分的内容需要自己编写，但是SSD和MobileNetV3的工作已经完成度很好了，所以也没有太大难度，参考[SSD](<https://github.com/qfgaohao/pytorch-ssd>)完成，非常感谢。需要注意的一点是在backbone中选取的第一层特征图位置在我的MobileNetV3中第9个MobileBlock中第一个conv中的经过h-swish激活之后的位置即可，这个的选择依据是每层的特征图大小，当然论文中也有提及，变化趋势是19-10-5-3-2-1。我贴出了一个
 
   > “For MobileNetV3-Small, C4 is the expansion layer of the 9-th bottleneck block.”
 
@@ -65,4 +63,20 @@
 
   完成这三个文件夹内容的生成便可以丢给网络开始训练了。
 
-  
+### 训练结果
+
+用于训练的数据有30类，数据量大概在95k左右，trainval_proportion和train_proportion都是0.9。
+
+第一部分的训练MobileNetV3模型，每个EPOCH的训练时间在10min左右(GTX1070)，设置了20EPOCH之内没有收敛则停止训练，所以大概在140个EPOCH之后停止。训练之后在测试中能够达到99.60的准确率。
+
+第二部分训练MobileNetV3 based SSD模型。这次的训练在进行了40个EPOCH停止，一方面是因为时间消耗太长，1070的算力不足，如果验证模型有效之后可以投入资源放置到服务器进行训练，所以用5类数据先进性训练会比较合理，另一方面为了得到更好的检测效果，希望尝试使用MobileNetV3-LARGE来代替现在使用的MobileNetV3-SMALL来进行训练。训练完成后我对这个MobileNetV3-SMALL based SSD - 40 EPOCH 模型进行了检测，结果如下：
+
+![eval-small-30sku](res_/Eval-s-30sku.png)
+
+mAP结果如下：
+
+![eval-small-30sku](res_/Eval-s-mAP.png)
+
+修改了模型之后，开始训练MobileNetV3-LARGE网络，这次训练了200EPOCH，原因是想让这个更深的网络能够充分学习，从结果来看其实在60个EPOCH之后网络几乎已经停止收敛，准确率能够达到99.64，从分类角度来说这和之前的SMALL网络结果达到的效果是近似的。
+
+接下来开始训练MobileNetV3-SMALL based SSD 模型，这次现在1070上用5个类别的数据进行训练，训练数据量为14.7k，测试数据量为1.6k，完成的一个EPOCH大约耗时22分钟。
