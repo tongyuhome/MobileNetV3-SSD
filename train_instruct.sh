@@ -1,0 +1,1 @@
+python train_ssd.py --dataset_type *使用数据集的类型*  --datasets *训练数据集地址* --validation_dataset *验证数据集地址* --net *构建网络名称* --base_net *基础网络保存模型地址*  --scheduler cosine --lr 0.01 --t_max 200 --validation_epochs 5 --num_epochs 20 --batch_size 4
